@@ -23,6 +23,7 @@ components:
   schemas:
     Sentence:
       required:
+      - data_source
       - id
       type: object
       properties:
@@ -30,6 +31,9 @@ components:
           type: string
           description: Unique identifier for the sentence
           format: uuid
+        version:
+          type: integer
+          description: Version of sentence object
         state:
           pattern: "^\\d{2}"
           type: string
@@ -43,9 +47,11 @@ components:
           description: "Sentencing date (month, day, and year)"
           format: date
         fine:
-          $ref: '#/components/schemas/SentenceTypeWithFines'
+          $ref: '#/components/schemas/SentenceTypeWithMonetaryPenalty'
+        fee:
+          $ref: '#/components/schemas/SentenceTypeWithMonetaryPenalty'
         restitution:
-          $ref: '#/components/schemas/SentenceTypeWithFines'
+          $ref: '#/components/schemas/SentenceTypeWithMonetaryPenalty'
         confinement:
           $ref: '#/components/schemas/SentenceTypeWithDuration'
         suspension:
@@ -62,9 +68,6 @@ components:
           $ref: '#/components/schemas/Sentence_data_source'
     SentenceType:
       type: object
-      properties:
-        hasType:
-          type: boolean
     SentenceTypeWithDuration:
       allOf:
       - $ref: '#/components/schemas/SentenceType'
@@ -76,17 +79,40 @@ components:
             type: integer
           duration_type:
             type: string
+            description: "When duration_type is life, minimum_duration and maximum_duration\
+              \ are ignored."
+            default: days
             enum:
             - days
             - months
             - years
-    SentenceTypeWithFines:
+            - life
+    SentenceTypeWithMonetaryPenalty:
       allOf:
       - $ref: '#/components/schemas/SentenceType'
       - type: object
         properties:
           amount:
             type: number
+    Sentence_data_source_confidence:
+      type: object
+      properties:
+        score:
+          maximum: 100
+          minimum: 0
+          type: integer
+        level:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        warnings:
+          type: array
+          description: List of warnings encountered when converting raw_text to Sentence
+            object type
+          items:
+            type: string
     Sentence_data_source:
       type: object
       properties:
@@ -104,7 +130,5 @@ components:
           type: string
           description: Raw (unstructured) text string from the source system
         confidence:
-          maximum: 100
-          minimum: 0
-          type: integer
+          $ref: '#/components/schemas/Sentence_data_source_confidence'
       description: Source of the sentencing data
