@@ -1,0 +1,134 @@
+openapi: 3.0.0
+info:
+  title: Sentences API
+  description: Sentences REST API
+  version: 0.1.1
+servers:
+- url: https://virtserver.swaggerhub.com/MHAMLIN/sentences/0.1.1
+  description: SwaggerHub API Auto Mocking
+paths:
+  /sentences:
+    get:
+      description: Returns a list of sentences
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sentence'
+components:
+  schemas:
+    Sentence:
+      required:
+      - data_source
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the sentence
+          format: uuid
+        version:
+          type: integer
+          description: Version of sentence object
+        state:
+          pattern: "^\\d{2}"
+          type: string
+          description: State FIPS code
+        county:
+          pattern: "^\\d{5}"
+          type: string
+          description: County FIPS code
+        date:
+          type: string
+          description: "Sentencing date (month, day, and year)"
+          format: date
+        fine:
+          $ref: '#/components/schemas/SentenceTypeWithMonetaryPenalty'
+        fee:
+          $ref: '#/components/schemas/SentenceTypeWithMonetaryPenalty'
+        restitution:
+          $ref: '#/components/schemas/SentenceTypeWithMonetaryPenalty'
+        confinement:
+          $ref: '#/components/schemas/SentenceTypeWithDuration'
+        suspension:
+          $ref: '#/components/schemas/SentenceType'
+        probation:
+          $ref: '#/components/schemas/SentenceTypeWithDuration'
+        community_service:
+          $ref: '#/components/schemas/SentenceTypeWithDuration'
+        treatment:
+          $ref: '#/components/schemas/SentenceTypeWithDuration'
+        death:
+          $ref: '#/components/schemas/SentenceType'
+        data_source:
+          $ref: '#/components/schemas/Sentence_data_source'
+    SentenceType:
+      type: object
+    SentenceTypeWithDuration:
+      allOf:
+      - $ref: '#/components/schemas/SentenceType'
+      - type: object
+        properties:
+          minimum_duration:
+            type: integer
+          maximum_duration:
+            type: integer
+          duration_type:
+            type: string
+            description: "When duration_type is life, minimum_duration and maximum_duration\
+              \ are ignored."
+            default: days
+            enum:
+            - days
+            - months
+            - years
+            - life
+    SentenceTypeWithMonetaryPenalty:
+      allOf:
+      - $ref: '#/components/schemas/SentenceType'
+      - type: object
+        properties:
+          amount:
+            type: number
+    Sentence_data_source_confidence:
+      type: object
+      properties:
+        score:
+          maximum: 100
+          minimum: 0
+          type: integer
+        level:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        warnings:
+          type: array
+          description: List of warnings encountered when converting raw_text to Sentence
+            object type
+          items:
+            type: string
+    Sentence_data_source:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the sentence in the source system
+        name:
+          type: string
+          description: Friendly name of the source system
+        type:
+          type: string
+          format: "enum [law_enforcement, courts, dept_of_corrections, criminal_history_repo,\
+            \ community_corrections_agency, other]"
+        raw_text:
+          type: string
+          description: Raw (unstructured) text string from the source system
+        confidence:
+          $ref: '#/components/schemas/Sentence_data_source_confidence'
+      description: Source of the sentencing data
