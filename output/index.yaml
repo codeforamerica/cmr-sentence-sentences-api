@@ -90,7 +90,7 @@ components:
           - high
         factors:
           type: array
-          description: List of factors that contribute to lowering the confidence
+          description: List of factors that contributed to lowering the confidence
             score
           items:
             type: string
