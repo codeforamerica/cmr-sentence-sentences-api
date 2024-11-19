@@ -25,7 +25,7 @@ components:
       required:
       - data_source
       - id
-      - types
+      - incarceration
       - version
       type: object
       properties:
@@ -35,47 +35,34 @@ components:
           format: uuid
         version:
           type: integer
-          description: Version of sentence object instance
+          description: Version of the sentence object instance
           default: 1
-        types:
+        incarceration:
+          $ref: '#/components/schemas/IncarcerationSentenceType'
+        other:
           type: array
           items:
-            $ref: '#/components/schemas/SentenceType'
+            type: string
+            description: Other aspects of the sentence.
+            enum:
+            - fine
+            - fee
+            - community_service
+            - rehab
+            - dui_school
+            - drug_fund
+            - forfeit_weapon
+            - drivers_license_suspended
+            - drivers_license_revoked
+            - other_treatment
         data_source:
           $ref: '#/components/schemas/Sentence_data_source'
-    SentenceType:
-      discriminator:
-        propertyName: type
-      oneOf:
-      - $ref: '#/components/schemas/GenericSentenceType'
-      - $ref: '#/components/schemas/IncarcerationSentenceType'
-    GenericSentenceType:
-      required:
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - fine
-          - fee
-          - community_service
-          - rehab
-          - dui_school
-          - drug_fund
-          - forfeit_weapon
-          - drivers_license_suspended
-          - drivers_license_revoked
-          - other_treatment
     IncarcerationSentenceType:
       required:
       - type
       type: object
       properties:
         type:
-          type: string
-          default: incarceration
-        category:
           type: string
           enum:
           - determinate
