@@ -1,0 +1,155 @@
+openapi: 3.0.0
+info:
+  title: Sentences API
+  description: Sentences REST API
+  version: 0.1.2
+servers:
+- url: https://virtserver.swaggerhub.com/MHAMLIN/sentences/0.1.2
+  description: SwaggerHub API Auto Mocking
+paths:
+  /sentences:
+    get:
+      description: Returns a list of sentences
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sentence'
+components:
+  schemas:
+    Sentence:
+      required:
+      - data_source
+      - id
+      - types
+      - version
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the sentence
+          format: uuid
+        version:
+          type: integer
+          description: Version of sentence object instance
+          default: 1
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/SentenceType'
+        data_source:
+          $ref: '#/components/schemas/Sentence_data_source'
+    SentenceType:
+      discriminator:
+        propertyName: type
+      oneOf:
+      - $ref: '#/components/schemas/GenericSentenceType'
+      - $ref: '#/components/schemas/IncarcerationSentenceType'
+    GenericSentenceType:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - Fines
+          - Fees
+          - Community Service
+          - Rehab
+          - DUI School
+          - Drug Fund
+          - Forfeit Weapon
+          - Drivers License Suspended
+          - Drivers License
+          - Revoked
+          - Other Treatment
+    IncarcerationSentenceType:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          default: Incarceration
+        category:
+          type: string
+          enum:
+          - Determinate
+          - Indeterminate
+          - Life
+          - Death
+        duration:
+          description: Duration is ignored when category is Life or Death. Duration.maximum
+            is ignored when category is Determinate.
+          allOf:
+          - $ref: '#/components/schemas/DurationType'
+    DurationType:
+      type: object
+      properties:
+        minimum:
+          type: integer
+        maximum:
+          type: integer
+        type:
+          type: string
+          default: days
+          enum:
+          - days
+          - months
+          - years
+    Sentence_data_source_confidence:
+      type: object
+      properties:
+        score:
+          maximum: 100
+          minimum: 0
+          type: integer
+        level:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        factors:
+          type: array
+          description: List of factors that contribute to lowering the confidence
+            score
+          items:
+            type: string
+            enum:
+            - Multiple Counts
+            - Conditional
+            - Suspended
+            - Deferred
+            - Probation
+            - Parole
+            - Time Served
+    Sentence_data_source:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the sentence in the source system
+        state:
+          pattern: "^\\d{2}"
+          type: string
+          description: State FIPS code
+        county:
+          pattern: "^\\d{5}"
+          type: string
+          description: County FIPS code
+        type:
+          type: string
+          format: "enum [law_enforcement, courts, dept_of_corrections, criminal_history_repo,\
+            \ community_corrections_agency, other]"
+        raw_text:
+          type: string
+          description: Raw (unstructured) text string from the source system
+        confidence:
+          $ref: '#/components/schemas/Sentence_data_source_confidence'
+      description: Source of the sentencing data
