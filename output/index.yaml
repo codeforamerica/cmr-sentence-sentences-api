@@ -103,6 +103,9 @@ components:
             - parole
             - time_served
     DataSourceType:
+      required:
+      - id
+      - raw_text
       type: object
       properties:
         id:
@@ -118,6 +121,7 @@ components:
           description: County FIPS code
         type:
           type: string
+          default: unknown
           enum:
           - law_enforcement
           - courts
@@ -125,11 +129,14 @@ components:
           - criminal_history_repo
           - community_corrections_agency
           - other
+          - unknown
         raw_text:
           type: string
           description: Raw (unstructured) text string from the source system
       description: Source of the sentencing data
     DurationType:
+      required:
+      - minimum
       type: object
       properties:
         minimum:
