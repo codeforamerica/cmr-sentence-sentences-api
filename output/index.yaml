@@ -25,7 +25,6 @@ components:
       required:
       - data_source
       - id
-      - incarceration
       - version
       type: object
       properties:
