@@ -57,17 +57,16 @@ components:
         type:
           type: string
           enum:
-          - Fines
-          - Fees
-          - Community Service
-          - Rehab
-          - DUI School
-          - Drug Fund
-          - Forfeit Weapon
-          - Drivers License Suspended
-          - Drivers License
-          - Revoked
-          - Other Treatment
+          - fines
+          - fees
+          - community_service
+          - rehab
+          - dui_school
+          - drug_fund
+          - forfeit_weapon
+          - drivers_license_suspended
+          - drivers_license_revoked
+          - other_treatment
     IncarcerationSentenceType:
       required:
       - type
@@ -79,13 +78,13 @@ components:
         category:
           type: string
           enum:
-          - Determinate
-          - Indeterminate
-          - Life
-          - Death
+          - determinate
+          - indeterminate
+          - life
+          - death
         duration:
-          description: Duration is ignored when category is Life or Death. Duration.maximum
-            is ignored when category is Determinate.
+          description: Duration is ignored when category is life or death. Duration.maximum
+            is ignored when category is determinate.
           allOf:
           - $ref: '#/components/schemas/DurationType'
     DurationType:
@@ -122,13 +121,13 @@ components:
           items:
             type: string
             enum:
-            - Multiple Counts
-            - Conditional
-            - Suspended
-            - Deferred
-            - Probation
-            - Parole
-            - Time Served
+            - multiple_counts
+            - conditional
+            - suspended
+            - deferred
+            - probation
+            - parole
+            - time_served
     Sentence_data_source:
       type: object
       properties:
@@ -145,8 +144,13 @@ components:
           description: County FIPS code
         type:
           type: string
-          format: "enum [law_enforcement, courts, dept_of_corrections, criminal_history_repo,\
-            \ community_corrections_agency, other]"
+          enum:
+          - law_enforcement
+          - courts
+          - dept_of_corrections
+          - criminal_history_repo
+          - community_corrections_agency
+          - other
         raw_text:
           type: string
           description: Raw (unstructured) text string from the source system
