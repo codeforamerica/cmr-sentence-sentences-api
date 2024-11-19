@@ -57,8 +57,8 @@ components:
         type:
           type: string
           enum:
-          - fines
-          - fees
+          - fine
+          - fee
           - community_service
           - rehab
           - dui_school
