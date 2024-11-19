@@ -74,7 +74,7 @@ components:
       properties:
         type:
           type: string
-          default: Incarceration
+          default: incarceration
         category:
           type: string
           enum:
