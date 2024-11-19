@@ -55,7 +55,9 @@ components:
             - drivers_license_revoked
             - other_treatment
         data_source:
-          $ref: '#/components/schemas/Sentence_data_source'
+          $ref: '#/components/schemas/DataSourceType'
+        confidence:
+          $ref: '#/components/schemas/ConfidenceType'
     IncarcerationSentenceType:
       required:
       - type
@@ -73,21 +75,7 @@ components:
             is ignored when category is determinate.
           allOf:
           - $ref: '#/components/schemas/DurationType'
-    DurationType:
-      type: object
-      properties:
-        minimum:
-          type: integer
-        maximum:
-          type: integer
-        type:
-          type: string
-          default: days
-          enum:
-          - days
-          - months
-          - years
-    Sentence_data_source_confidence:
+    ConfidenceType:
       type: object
       properties:
         score:
@@ -114,7 +102,7 @@ components:
             - probation
             - parole
             - time_served
-    Sentence_data_source:
+    DataSourceType:
       type: object
       properties:
         id:
@@ -140,6 +128,18 @@ components:
         raw_text:
           type: string
           description: Raw (unstructured) text string from the source system
-        confidence:
-          $ref: '#/components/schemas/Sentence_data_source_confidence'
       description: Source of the sentencing data
+    DurationType:
+      type: object
+      properties:
+        minimum:
+          type: integer
+        maximum:
+          type: integer
+        type:
+          type: string
+          default: days
+          enum:
+          - days
+          - months
+          - years
